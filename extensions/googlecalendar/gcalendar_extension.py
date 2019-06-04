@@ -5,23 +5,28 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from SECRETS import gcal_caladdr, gcal_notifi_channel
+import sys
 
 import discord
 from discord.ext import commands, tasks
+
+sys.path.insert(0, 'extensions\\googlecalendar')
+import SECRETS_gcal
 
 
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
+
 def setup(bot):
     bot.add_cog(gcalendar(bot))
 
 class gcalendar(commands.Cog):
-    def __init__(self, bot, gcal_notifi_channel, gcal_caladdr):
+    def __init__(self, bot):
         self.bot = bot
-        self.notifi_channel = gcal_notifi_channel
+        self.notifi_channel = SECRETS_gcal.gcal_notifi_channel
+        self.gcal_caladdr = SECRETS_gcal.gcal_caladdr
         self.events = {}
         self.get_gcal_events.start()
 
@@ -53,7 +58,7 @@ class gcalendar(commands.Cog):
         now_gcalstring = datetime.datetime.now().isoformat() + 'Z' # 'Z' indicates UTC time
         
 
-        events_result = service.events().list(calendarId=gcal_caladdr, timeMin=now_gcalstring,
+        events_result = service.events().list(calendarId=self.gcal_caladdr, timeMin=now_gcalstring,
                                             maxResults=1, singleEvents=True,
                                             orderBy='startTime').execute()
         
