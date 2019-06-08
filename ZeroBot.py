@@ -19,9 +19,20 @@ async def on_ready():
 
     
 
-@bot.command(name= 'ping')
-async def _ping(message):
+@bot.command()
+async def ping(message):
     await message.channel.send('```Pong!```')
+
+@bot.group()
+async def management(ctx, name= 'mngment'):
+    if ctx.invoked_subcommand is None:
+        await ctx.send('Invalid mngment command passed !')
+
+@management.command()
+async def set_gcalendar_notification_channel(ctx):
+    if ctx.message.author.server_permissions.administrator():
+        pass
+
 
 
 
