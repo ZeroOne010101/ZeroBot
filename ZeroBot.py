@@ -34,7 +34,7 @@ async def set_gcalendar_notification_channel(ctx):
         pass
 
 
-
+# on server specific variable storage, see Database.txt !!!
 
 
 
