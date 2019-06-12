@@ -5,18 +5,18 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import sys
 
 import discord
 from discord.ext import commands, tasks
 
-sys.path.insert(0, 'extensions\\googlecalendar')
-import SECRETS_gcal
-
-
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+
+# ToDo: - make this compatible with the db and multiple guilds(attach guild id to output list?)
+#       - find out how to give guilds the ability to set custom parameters(aka find out how to get the reminder time from google)
+#       - bind functionality to tags
+
 
 
 def setup(bot):
@@ -25,8 +25,8 @@ def setup(bot):
 class gcalendar(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.notifi_channel = SECRETS_gcal.gcal_notifi_channel
-        self.gcal_caladdr = SECRETS_gcal.gcal_caladdr
+        self.notifi_channel = SECRETS_gcal.gcal_notifi_channel # make compatible with database
+        self.gcal_caladdr = SECRETS_gcal.gcal_caladdr # make compatible with database
         self.events = {}
         self.get_gcal_events.start()
 
@@ -78,7 +78,7 @@ class gcalendar(commands.Cog):
                 self.event_endtime_str = event['end'].get('dateTime' , 'No end available')
                 #sending message
                 ch = self.bot.get_channel(self.notifi_channel)
-                await ch.send( '```' + '\n' + self.event_summary + '\n' + self.event_description + '\n' + self.event_location + '\n' + self.event_starttime_str + '\n' + self.event_endtime_str + '```')
+                await ch.send( f'```\n{self.event_summary}\n{self.event_description}\n{self.event_location}\n{self.event_starttime_str}\n{self.event_endtime_str}```')
     
 
 
