@@ -15,7 +15,8 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 # ToDo: - make this compatible with the db and multiple guilds(attach guild id to output list?)
 #       - find out how to give guilds the ability to set custom parameters(aka find out how to get the reminder time from google)
-#       - bind functionality to tags
+#       - bind functionality to tags.
+#       - parse image: url in the description, complete with error handling
 
 
 
