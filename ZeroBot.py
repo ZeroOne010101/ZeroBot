@@ -26,7 +26,7 @@ bot_owner = None
 #       - add guilds that the bot is already in to the db
 
 # loading extensions
-bot.load_extension('extensions.googlecalendar.gcalendar_extension')
+bot.load_extension('extensions.googlecalendar_extension')
 
 # Readycheck. dont do anything bot related before that
 @bot.event
