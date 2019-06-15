@@ -17,8 +17,6 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 os.chdir('D:\\Dateien\\Programmieren\\Python\\ZeroBot')
 
 
-def setup(bot):
-    bot.add_cog(gcalendar_ext(bot))
 
 class gcalendar_ext(commands.Cog):
     def __init__(self, bot):
@@ -33,19 +31,24 @@ class gcalendar_ext(commands.Cog):
         self.flow.run_local_server(open_browser=False)
 
     @commands.command()
-    async def run_gcalauth_task(self, ctx, bot):
+    async def run_gcalauth_task(self, ctx):
         await ctx.channel.send('Please open this url in your browser and authorise the bot:\nhttps://accounts.google.com/o/oauth2/auth?response_type=code&client_id=218532216115-7f3iqbod33k9mlrm924bcn78jfbr1o19.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&state=lhrMEQmkeX5H2fam1sCIgf9wd0e4yQ&access_type=offline\n You may receiver a warning because the bot has not been tested by google. You can enable the bot anyway by clicking on \'advanced\' an then on \'open ZeroBot gcal_extension\'.\nIf no action is taken within 15 minutes, the command needs to be issued again for performance reasons.')
         gcalauth_task_partial = functools.partial(self.gcalauth_task)
         if self.gcalauth_task_is_running == False:
             self.gcalauth_task_is_running = True
             # executor in order to not block the bot
-            await bot.loop.run_in_executor(None, gcalauth_task_partial)
+            await self.bot.loop.run_in_executor(None, gcalauth_task_partial)
+            print('executor is has stopped') # implement who stopped it by logging in in logging, possibly important in the event of a timeout
             self.gcalauth_task_is_running = False
         else:
             print('Not executed, because: self.gcalauth_task_is_running = True')
     
     def get_gcal_events(self, gcaladdr): # This Function will get called by the output function with all the necessary parameters from the db.
         pass                        # Continue here tomorrow, bake in the db while you're at it. Design a programm flow beforehand.
+
+
+def setup(bot):
+    bot.add_cog(gcalendar_ext(bot))
 
 
 
