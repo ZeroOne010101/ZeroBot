@@ -11,8 +11,9 @@ import os
 
 # ToDo: - make this compatible with the db and multiple guilds(attach guild id to output list?)
 #       - find out how to give guilds the ability to set custom parameters(aka find out how to get the reminder time from google)
-#       - bind functionality to tags.
+#       - bind functionality to tags. eg:[inage]
 #       - parse image: url in the description, complete with error handling
+#       - Find out if adding the service account to private calendars works. Else, issue instructions accordingly
 
 os.chdir('D:\\Dateien\\Programmieren\\Python\\ZeroBot')
 
