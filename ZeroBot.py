@@ -31,6 +31,7 @@ bot_owner = None
 
 # loading extensions
 bot.load_extension('extensions.googlecalendar_extension')
+# bot.load_extension('extensions.testextension')
 
 # Readycheck. dont do anything bot related before that
 @bot.event

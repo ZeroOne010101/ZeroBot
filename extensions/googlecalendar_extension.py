@@ -86,7 +86,7 @@ os.chdir('D:\\Dateien\\Programmieren\\Python\\ZeroBot')
 class googlecalendar_extension(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.gcal_notifier().start()
+        self.gcal_notifier.start()
     
     async def funcrunner(self, timeframe, google_calendar_id):
         executor = await self.bot.loop.run_in_executor(None, self.google_apiresponse_sorter(self.google_api_get_events(timeframe, google_calendar_id))) # problems with this it seems... try running all functions in executors, figure out what the tuple errors are about, or run non-asyncronous
@@ -166,7 +166,6 @@ class googlecalendar_extension(commands.Cog):
                 await nchannel.send(embed=embed)
                     
                 # possibly add logging here for what gets sent where
-                await asyncio.sleep(10)
 
     def google_api_get_events(self, timeframe, google_calendar_id):
         events = {}
