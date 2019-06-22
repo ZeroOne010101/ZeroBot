@@ -1,9 +1,13 @@
 import discord
-from discord.ext import commands
+from discord.ext import tasks, commands
 from SECRETS import TOKEN
 import logging
 import aiosqlite #async bridge to the sqlite3 module
 import os
+
+import googleapiclient.discovery
+from google.oauth2 import service_account
+import google
 
 # to insure that the working directory is correct (thanks windows for making this necessary. linux mvp)
 os.chdir('D:\\Dateien\\Programmieren\\Python\\ZeroBot')
@@ -53,7 +57,6 @@ async def on_guild_join(guild):
             await bot_owner.send('srv_id is over 9000! fix the db!')
         await db.execute(f'INSERT INTO servers (server) VALUES (\'{guild}\');')
         await db.commit()
-
 # removes servers to db if it gets kicked
 @bot.event
 async def on_guild_remove(guild):
