@@ -29,12 +29,16 @@ class googlecalendar_extension(commands.Cog):
             async with aiosqlite.connect('D:\\Dateien\\Programmieren\\Python\\ZeroBot\\ZeroBot_db.sqlite') as db:
                 calendar_dbdata =  await db.execute('SELECT gcal_calendar_id, gcal_notification_channel, format_reversed FROM gcal_ext;')
                 calendar_dbdata = await calendar_dbdata.fetchall()
-            for dbdata in calendar_dbdata: # Test that before deployment !!!
-                eventdata = self.google_apiresponse_sorter(self.google_api_get_events(168, dbdata[0])) # ToDo: add try: except to it so id doesnt break on every invalid calendar address, and notify the guild owner (maybe: run this in executor so the bot doesnt slow down)
-                nchannel = self.bot.get_channel(dbdata[1])
+            for dbdata in calendar_dbdata:
+                # abstracting database calls
+                calendar_adress = dbdata[0]
+                nchannel_id = dbdata[1]
+                nchannel = self.bot.get_channel(nchannel_id)
                 format_reversed = dbdata[2]
-
-                # get all bot-messages in channel
+                
+                eventdata = self.google_apiresponse_sorter(self.google_api_get_events(168, calendar_adress)) # ToDo: add try: except to it so id doesnt break on every invalid calendar address, and notify the guild owner (maybe: run this in executor so the bot doesnt slow down)
+                
+                # get all bot-messages in nchannel
                 messages_to_delete = []
                 async for message in nchannel.history(limit=100):
                     if message.author == self.bot.user:
@@ -50,60 +54,68 @@ class googlecalendar_extension(commands.Cog):
                     pass # logging here, occurs when deleting the messages failed
 
                 # loop thruogh the 0'th list with evtdtelementlen being the current list-element
-                for evtdtlistlen in range(len(eventdata[0])):
+                # TODO: this is not perfict, in the future use the longest list in eventdata
+                for i in range(len(eventdata[0])):
+                    # further abstracting eventdata calls
+                    evt_starttime = eventdata[0][i]
+                    evt_endtime = eventdata[1][i]
+                    evt_title = eventdata[2][i]
+                    evt_description = eventdata[3][i]
+                    
                     # Title
-                    if eventdata[2][evtdtlistlen] != None:
-                        embed = discord.Embed(title=eventdata[2][evtdtlistlen])
+                    if evt_title != None:
+                        embed = discord.Embed(title=evt_title)
                         # print(eventdata[2][evtdtlistlen])
                     else:
                         embed = discord.Embed(title='No Title Found')
                         
                     # Starttime
-                    if eventdata[0][evtdtlistlen] != None:
+                    if evt_starttime != None:
                         # plug starttime into parser
-                        eventdata_start = self.date_parser(eventdata[0][evtdtlistlen], format_reversed)
+                        eventdata_start = self.date_parser(evt_starttime, format_reversed)
                         # add parsed string to embed
                         embed.add_field(name='Start:', value=f'{eventdata_start}\n', inline=True)
                     else:
                         embed.add_field(name='Start:', value='No starttime found\n', inline=True)
 
                     # Endtime
-                    if eventdata[1][evtdtlistlen] != None:
-                        eventdata_end = self.date_parser(eventdata[0][evtdtlistlen], format_reversed)
+                    if evt_endtime != None:
+                        eventdata_end = self.date_parser(evt_endtime, format_reversed)
                         embed.add_field(name='End:', value=f'{eventdata_end}\n', inline=True)
                     else:
                         embed.add_field(name='End:', value='No endtime found\n', inline=True)
 
                     # Description & searching for image
-                    if eventdata[3][evtdtlistlen] != None:
-                        desc_str = eventdata[3][evtdtlistlen]
+                    # TODO: make the parsing a function for readability! also do something about the repetitive structure!
+                    if evt_description != None:
+                        # string to send when invalid url is passed, may become obsolete after error handling is done
                         invaludurl_warning_str = ''
                         # Splits the string into a list at every whitespace
-                        desc_str_list = desc_str.split()
-                        for element in desc_str_list:
+                        evt_description_str_list = evt_description.split()
+                        for element in evt_description_str_list:
                             if 'image:' in element and element != 'image:':
                                 img_url = element.replace('image:', '')
-                                desc_str = desc_str.replace(element, '')
+                                evt_description = evt_description.replace(element, '')
                                 # discord.py doesnt accept empty strings
-                                if desc_str == '':
-                                    desc_str = 'No Description found.'
+                                if evt_description == '':
+                                    evt_description = 'No Description found.'
 
                                 try:
                                     embed.set_image(url=img_url)
                                 except:
                                     invaludurl_warning_str = 'Invalid url given!'
                             elif element == 'image:':
-                                img_url = desc_str_list[desc_str_list.index('image:')+1]
-                                desc_str = desc_str.replace(f'image: {img_url}', '')
+                                img_url = evt_description_str_list[evt_description_str_list.index('image:')+1]
+                                evt_description = evt_description.replace(f'image: {img_url}', '')
                                 # discord.py doesnt accept empty strings
-                                if desc_str == '':
-                                    desc_str = 'No Description found.'
+                                if evt_description == '':
+                                    evt_description = 'No Description found.'
 
                                 try:
                                     embed.set_image(url=img_url)
                                 except:
                                     invaludurl_warning_str = 'Invalid url given!'
-                        embed.add_field(name='Description:', value=f'{desc_str}\n{invaludurl_warning_str}', inline=False)
+                        embed.add_field(name='Description:', value=f'{evt_description}\n{invaludurl_warning_str}', inline=False)
                         
                     else:
                         embed.add_field(name='Description:', value='No Description found.', inline=False)
