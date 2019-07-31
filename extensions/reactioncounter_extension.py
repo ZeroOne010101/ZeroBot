@@ -17,11 +17,6 @@ class ReactCounter(commands.Cog):
             'responses':[]
             }
     
-    # REMEMBER TO REMOVE
-    @commands.command()
-    async def listdict(self, ctx):
-        await ctx.send(str(self.reactdict))
-
     @commands.command(name='poll')
     async def createrc (self, ctx, *, optargs):
         ##### removing any pesky emojis that interfere with regex #####
