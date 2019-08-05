@@ -17,13 +17,16 @@ class ReactCounter(commands.Cog):
             'responses':[]
             }
     
-    @commands.command(name='poll')
-    async def createrc (self, ctx, *, optargs):
-        ##### removing any pesky emojis that interfere with regex #####
-        #
-        # the current way of doing things is not best practice, see notes in parsetest.py
-        #
+    # REMEMBER TO REMOVE
+    @commands.command()
+    async def listdict(self, ctx):
+        await ctx.send(str(self.reactdict))
 
+    @commands.command(name='poll')
+    async def createrc (self, ctx, *, optargs=''):
+        # Note: the current way of doing things possibly isnt best practice, see notes in parsetest.py
+        if optargs == '':
+            ctx.send('ERROR: No arguments were passed!')
         ##### parsing optargs #####
         # parsing verboseness
         verbose_match = re.search(r'verbose=(True)', optargs)
@@ -120,7 +123,7 @@ class ReactCounter(commands.Cog):
         # making and sending the embed
         embed = discord.Embed(title=msg_title) # initialising embed
         for rname in rnameslist:
-            embed.add_field(name=rname, value='0', inline=False)
+            embed.add_field(name=rname, value='-----', inline=False)
         sent_message = await channel.send(embed=embed) # getting the message object from the sent message
         # adding id of sent message to dict
         self.reactdict['msg_ids'].append(sent_message.id)
