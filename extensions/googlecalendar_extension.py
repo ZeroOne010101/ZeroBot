@@ -10,7 +10,7 @@ import aiosqlite
 import asyncio
 
 class GcalEvent:
-    def __init__(self, event):
+    def __init__(self, event: dict) -> GcalEvent:
         self.start = None
         self.end = None
         self.title = None
@@ -48,7 +48,7 @@ class GcalEvent:
             pass
         
 class GcalBotInfo:
-    def __init__(self, description):
+    def __init__(self, description: str) -> GcalBotInfo:
         self.remind = False
         self.pollcmd = None
         
@@ -57,7 +57,7 @@ class GcalBotInfo:
     def self._parsedesc(self, description):
         pass
 
-def get_events(temeframe, calid):
+def get_events(temeframe: int, calid: str) -> dict:
     events = {}
         
     now = datetime.datetime.utcnow() # requests to the api must be made in UTC format
@@ -79,7 +79,7 @@ def get_events(temeframe, calid):
     events = api_response.get('items', [])
     return events
 
-def buildEmbed(event):
+def buildEmbed(event: GcalEvent) -> discord.Embed:
     pass
 
 
