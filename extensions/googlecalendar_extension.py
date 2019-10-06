@@ -20,7 +20,7 @@ class GcalEvent:
         # parse any triggers
         self.botinfo = GcalBotInfo(self.description)
     
-    def _eventparse(self, event):
+    def _eventparse(self, event: dict):
         # start
         try:
             start = event['start'].get('dateTime', event['start'].get('date'))
@@ -54,7 +54,7 @@ class GcalBotInfo:
         
         self._parsedesc(description)
         
-    def self._parsedesc(self, description):
+    def self._parsedesc(self, description: str):
         pass
 
 def get_events(temeframe: int, calid: str) -> dict:
