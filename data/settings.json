@@ -1,0 +1,6 @@
+{
+    "extensions": [
+        "extensions.admincommands",
+        "extensions.reactioncounter_extension"
+    ]
+}
