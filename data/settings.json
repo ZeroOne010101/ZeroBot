@@ -1,6 +1,15 @@
 {
-    "extensions": [
-        "extensions.admincommands",
-        "extensions.reactioncounter_extension"
-    ]
+    "token": "TOKEN HERE",
+    "cogs": [
+        "cogs.admincommands",
+        "cogs.polls",
+        "cogs.errorhandler",
+        "cogs.miscellaneous"
+    ],
+    "postgres": {
+        "pgHost": "IP HERE",
+        "pgUser": "USERNAME HERE",
+        "pgPassword": "PASSWORD HERE",
+        "pgDatabase": "DATABASE HERE"
+    }
 }
