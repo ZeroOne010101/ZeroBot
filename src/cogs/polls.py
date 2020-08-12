@@ -7,7 +7,7 @@ from datetime import date, timedelta
 from asyncpg import PostgresError
 import traceback
 from emoji import UNICODE_EMOJI
-from __main__ import path, dbPool
+from __main__ import dbPool
 
 ##### Exceptions #####
 class PollsBaseException(commands.CommandError):
@@ -201,7 +201,7 @@ class Poll:
 
         return poll
 
-class PollsCog(commands.Cog):
+class Polls(commands.Cog):
     """The Cog object that gets loaded by the bot"""
     def __init__(self, bot):
         self.bot = bot
@@ -225,6 +225,23 @@ class PollsCog(commands.Cog):
     @commands.guild_only()
     @commands.command(name='poll')
     async def pollCommand(self, ctx: commands.Context, *, args: str):
+        """Makes a poll.
+
+        Required:
+            options=[option|reaction;...]
+            Where option is the bulletpoint and reaction the button to click.
+            There is no restriction on the amount, but discord messes with things after 20.
+
+        Optional:
+            verbose=yes/no
+            Shows usernames rather than numbers
+
+            channelid=0000000
+            The id of the channel the poll should be in.
+            Can be obtained by enabling developer options and right-clicking on a channal.
+
+            title="Some Title"
+            Sets anything within the quotes as the poll's title."""
         poll = Poll.from_input(self.bot, ctx, args)
         pollEmbed = await self.constructEmbed(poll)
         msgChannel = self.bot.get_channel(poll.channelId)
@@ -368,4 +385,4 @@ class PollsCog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(PollsCog(bot))
+    bot.add_cog(Polls(bot))

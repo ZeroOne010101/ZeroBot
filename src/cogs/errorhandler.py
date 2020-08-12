@@ -3,7 +3,7 @@ from discord.ext import commands
 import logging
 import traceback
 
-class ErrorhandlerCog(commands.Cog):
+class Errorhandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -39,4 +39,4 @@ class ErrorhandlerCog(commands.Cog):
             raise error
 
 def setup(bot):
-    bot.add_cog(ErrorhandlerCog(bot))
+    bot.add_cog(Errorhandler(bot))

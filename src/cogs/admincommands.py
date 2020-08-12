@@ -1,13 +1,13 @@
 from discord.ext import commands
 import logging
 
-class AdmincommandsCog(commands.Cog):
+class Admincommands(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
     
     ##### Commands #####
     @commands.is_owner()
-    @commands.command(hidden=True)
+    @commands.command()
     async def close(self, ctx):
         """Closes connection to discord"""
         await ctx.send("```Are you sure you want to close the bot? (y/n)```")
@@ -20,7 +20,7 @@ class AdmincommandsCog(commands.Cog):
             await ctx.send("```The \"close\" command has been aborted.```")
 
     @commands.is_owner()
-    @commands.group(name='message', hidden=True, invoke_without_command=True)
+    @commands.group(name='message', invoke_without_command=True)
     async def message(self, ctx, userID, *, message):
         user = self.bot.get_user(int(userID))
         await user.send(message)
@@ -50,4 +50,4 @@ class AdmincommandsCog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(AdmincommandsCog(bot))
+    bot.add_cog(Admincommands(bot))

@@ -5,12 +5,12 @@ from os import chdir
 import json
 import pathlib
 
-# Setting up basic logging TODO: properly log and add logfile before deploy
-logging.basicConfig(format="[%(asctime)s] %(levelname)s:%(message)s", level=logging.INFO, datefmt="%d.%m.%Y %H:%M:%S", filename="data/logfile.log")
-
 # Setting base path
 path = pathlib.Path('d:/Dateien/Programmieren/Python/ZeroBot')
 chdir(path)
+
+# Setting up basic logging TODO: properly log and add logfile before deploy
+logging.basicConfig(format="[%(asctime)s] %(levelname)s:%(message)s", level=logging.INFO, datefmt="%d.%m.%Y %H:%M:%S", filename="data/logfile.log")
 
 # Load Settings
 botSettings = None
@@ -29,21 +29,17 @@ async def initialize_pool():
 
 # Gets prefixes from db
 async def get_prefix(bot, ctx):
-    prefixes = '!' # Standard prefix
-    if not ctx.guild: # Use default prefix in dm's
-        return commands.when_mentioned_or(prefixes)(bot, ctx)
-
     async with dbPool.acquire() as conn:
         async with conn.transaction():
-            dbRecords = await conn.fetch(f'SELECT prefix FROM prefixes WHERE fk = (SELECT id FROM guilds WHERE guild_id = $1);', ctx.guild.id)
-            if dbRecords != []:
+            dbRecords = await conn.fetch('SELECT prefix FROM prefixes WHERE fk = (SELECT id FROM guilds WHERE guild_id = $1);', ctx.guild.id)
+            if dbRecords:
                 if len(dbRecords) > 1:
-                    prefixes = []
-                    for dbRecord in dbRecords:
-                        prefixes.append(dbRecord['prefix'])
+                    prefixes = [dbRecord['prefix'] for dbRecord in dbRecords]
                 else:
-                    prefixes = dbRecords[0]['prefix']
-    return commands.when_mentioned_or(prefixes)(bot, ctx)
+                    prefixes = [dbRecords[0]['prefix']]
+            else:
+                prefixes = ['!']
+    return commands.when_mentioned_or(*prefixes)(bot, ctx)
 
 # Define bot
 bot = commands.Bot(command_prefix=get_prefix, owner_id=318774395189460994)
@@ -68,11 +64,11 @@ async def on_ready():
         for guild in bot.guilds:
             if guild.id not in dbGuildIdList:
                 async with conn.transaction():
-                    await conn.execute(f'INSERT INTO guilds(guild_id) VALUES($1);', guild.id)
+                    await conn.execute('INSERT INTO guilds(guild_id) VALUES($1);', guild.id)
 
 @bot.command()
 async def ping(ctx):
-    """Basic ping command"""
+    """Reports the bots latency."""
     await ctx.channel.send(f'Pong! :ping_pong:\n```The bot has {bot.latency}s latency.```')
 
 # Add guild to db if it gets invited
@@ -80,14 +76,14 @@ async def ping(ctx):
 async def on_guild_join(guild):
     async with dbPool.acquire() as conn:
         async with conn.transaction():
-            await conn.execute(f'INSERT INTO guilds(guild_id) VALUES($1);', guild.id)
+            await conn.execute('INSERT INTO guilds(guild_id) VALUES($1);', guild.id)
 
 # Remove guild from db if it gets kicked
 @bot.event
 async def on_guild_remove(guild):
     async with dbPool.acquire() as conn:
         async with conn.transaction():
-            await conn.execute(f'DELETE FROM guilds WHERE guild_id = $1;', guild.id)
+            await conn.execute('DELETE FROM guilds WHERE guild_id = $1;', guild.id)
 
 ##### Cog load/unload/reload commands #####
 # These commands are not to be placed in cogs,
@@ -102,6 +98,7 @@ async def load(ctx, *, module):
     except commands.ExtensionError as e:
         logging.error(f'{e.__class__.__name__}: {e}')
         await ctx.send(f'{e.__class__.__name__}: {e}')
+        raise e
     else:
         logging.info(f'module cogs.{module} was loaded successfully')
         await ctx.send(':thumbsup:')
@@ -115,6 +112,7 @@ async def unload(ctx, *, module):
     except commands.ExtensionError as e:
         logging.error(f'{e.__class__.__name__}: {e}')
         await ctx.send(f'{e.__class__.__name__}: {e}')
+        raise e
     else:
         logging.info(f'module cogs.{module} was unloaded successfully')
         await ctx.send(':thumbsup:')
@@ -128,6 +126,7 @@ async def reload(ctx, *, module):
     except commands.ExtensionError as e:
         logging.error(f'{e.__class__.__name__}: {e}')
         await ctx.send(f'{e.__class__.__name__}: {e}')
+        raise e
     else:
         logging.info(f'module cogs.{module} was reloaded successfully')
         await ctx.send(':thumbsup:')
@@ -138,6 +137,5 @@ async def loaded(ctx):
     """Reports all loded modules."""
     await ctx.channel.send(f'```{bot.extensions}```')
 
-# TODO: make nice help command that only features commands that users can use, use the description function. It is possible to hide commands.
-# TODO try getting relative paths to work again
+# TODO add restrictions in control
 bot.run(botSettings['token'])
