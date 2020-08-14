@@ -194,7 +194,7 @@ class Poll:
 
         # Message title
         poll.messageTitle = 'No title specified'
-        titleMatch = re.search(r'title\s?=\s?\'(.*)\'', input, re.DOTALL)
+        titleMatch = re.search(r'title\s?=\s?\"(.*)\", input, re.DOTALL)
         if titleMatch != None:
             if titleMatch.group(1) != '':
                 poll.messageTitle = titleMatch.group(1)
