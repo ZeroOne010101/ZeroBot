@@ -1,0 +1,7 @@
+**/__pycache__/**
+**/.vscode/**
+.git
+data/zerobot_gcal_serviceaccount_creds.json.bak
+data/zerobot-gcal-extension-f0608da8a1be.json
+data/logfile.log
+data/settings.json
