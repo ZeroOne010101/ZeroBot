@@ -12,5 +12,5 @@ A Discord bot written in python using discord.py. Currently still in development
 | --- | --- |
 | **Restrictions & Prefixes** | Enables each guild to dis/enable just the stuff they need and set their own prefix. |
 | **Google Calendar Integration** | Informs about upcoming events in a specified channel and notifies when they begin. |
-| **Tags** | Enables each guild to dis/enable just the stuff they need and set their own prefix. |
+| **Tags** | Macro for things that are often said |
 | **Guildwars 2 & Plandtside 2 Integration** | Lowest priority, may never happen. Integrates Stat and Event tracking for both games. |
