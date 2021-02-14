@@ -1,5 +1,5 @@
 # ZeroBot
-A Discord bot written in python using discord.py. Currently still in development.
+A Discord bot written in python using discord.py. Currently in hiatus.
 ## Current Features
 | Feature | Description |
 | --- | --- |
